@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BanhMyIT.Migrations
 {
     [DbContext(typeof(BanhMyITDbContext))]
-    [Migration("20250922104735_InitialCreate")]
+    [Migration("20250922110758_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -110,6 +110,9 @@ namespace BanhMyIT.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("City")
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstMidName")
                         .IsRequired()
