@@ -1,0 +1,44 @@
+﻿@model BanhMyIT.Models.Category
+@{
+    ViewData["Title"] = "Category Details";
+}
+<h1 class="mb-3">Category Details</h1>
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">Category not found.</div>
+}
+else
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Products</dt>
+                <dd class="col-sm-9">@((Model.Products == null) ? 0 : Model.Products.Count)</dd>
+            </dl>
+        </div>
+    </div>
+
+    @if (Model.Products != null && Model.Products.Any())
+    {
+        <h5>Products</h5>
+        <ul class="list-group mb-3">
+            @foreach (var p in Model.Products)
+            {
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>@p.Name</span>
+                    <span class="text-muted">@String.Format("{0:0.##}", p.Price)</span>
+                </li>
+            }
+        </ul>
+    }
+
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.CategoryID" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.CategoryID" class="btn btn-danger">Delete</a>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+}

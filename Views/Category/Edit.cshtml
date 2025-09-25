@@ -1,0 +1,24 @@
+﻿@model BanhMyIT.Models.Category
+@{
+    ViewData["Title"] = "Edit Category";
+}
+<h1 class="mb-3">Edit Category</h1>
+
+<form asp-action="Edit" method="post" class="needs-validation" novalidate>
+    <input type="hidden" asp-for="CategoryID"/>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control"/>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
