@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BanhMyIT.Models
 {
@@ -20,7 +21,7 @@ namespace BanhMyIT.Models
         [Range(0,int.MaxValue, ErrorMessage = "SumPrice must be >= 0")] 
         public int SumPrice { get; set; }
 
-        public User User { get; set; } = null!; // EF populated
-        public Product Product { get; set; } = null!; // EF populated
+        [ValidateNever] public User User { get; set; } = null!; // EF populated
+        [ValidateNever] public Product Product { get; set; } = null!; // EF populated
     }
 }

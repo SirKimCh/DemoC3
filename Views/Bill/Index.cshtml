@@ -1,36 +1,44 @@
 ﻿@model IEnumerable<BanhMyIT.Models.Bill>
-@{
-    ViewData["Title"] = "Bills";
+@{ 
+    ViewData["Title"] = "Bills"; 
 }
-<h2>Bills</h2>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<h1 class="mb-3">Bills</h1>
+<div class="d-flex justify-content-between mb-3">
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</div>
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">No bills found.</div>
+}
+else
+{
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
         <tr>
-            <th>BillID</th>
             <th>User</th>
             <th>Product</th>
-            <th>PayMethod</th>
-            <th>SumPrice</th>
-            <th></th>
+            <th>Pay Method</th>
+            <th class="text-end">Sum Price</th>
+            <th style="width:180px;"></th>
         </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.BillID</td>
-            <td>@item.User?.FirstMidName @item.User?.LastName</td>
-            <td>@item.Product?.Name</td>
-            <td>@item.PayMethod</td>
-            <td>@item.SumPrice</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.BillID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BillID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BillID">Delete</a>
-            </td>
-        </tr>
+        </thead>
+        <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.User?.FirstMidName @b.User?.LastName</td>
+                <td>@b.Product?.Name</td>
+                <td>@b.PayMethod</td>
+                <td class="text-end">@b.SumPrice</td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a asp-action="Details" asp-route-id="@b.BillID" class="btn btn-outline-secondary">Details</a>
+                        <a asp-action="Edit" asp-route-id="@b.BillID" class="btn btn-outline-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@b.BillID" class="btn btn-outline-danger">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>

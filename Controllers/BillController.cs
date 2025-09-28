@@ -2,6 +2,7 @@
 using BanhMyIT.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace BanhMyIT.Controllers
 {
@@ -10,11 +11,13 @@ namespace BanhMyIT.Controllers
         private readonly IBillService _billService;
         private readonly IProductService _productService;
         private readonly IUserService _userService;
-        public BillController(IBillService billService, IProductService productService, IUserService userService)
+        private readonly ILogger<BillController> _logger;
+        public BillController(IBillService billService, IProductService productService, IUserService userService, ILogger<BillController> logger)
         {
             _billService = billService;
             _productService = productService;
             _userService = userService;
+            _logger = logger;
         }
         public async Task<IActionResult> Index()
         {
@@ -40,7 +43,14 @@ namespace BanhMyIT.Controllers
             if (ModelState.IsValid)
             {
                 await _billService.AddAsync(bill);
+                TempData["Success"] = "Bill created successfully";
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                foreach (var kv in ModelState)
+                    foreach (var err in kv.Value.Errors)
+                        _logger.LogWarning("Create Bill ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
             }
             ViewBag.Products = await _productService.GetAllAsync();
             ViewBag.Users = await _userService.GetAllAsync();
@@ -61,7 +71,14 @@ namespace BanhMyIT.Controllers
             if (ModelState.IsValid)
             {
                 await _billService.UpdateAsync(bill);
+                TempData["Success"] = "Bill updated successfully";
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                foreach (var kv in ModelState)
+                    foreach (var err in kv.Value.Errors)
+                        _logger.LogWarning("Edit Bill ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
             }
             ViewBag.Products = await _productService.GetAllAsync();
             ViewBag.Users = await _userService.GetAllAsync();
@@ -78,8 +95,8 @@ namespace BanhMyIT.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _billService.DeleteAsync(id);
+            TempData["Success"] = "Bill deleted successfully";
             return RedirectToAction(nameof(Index));
         }
     }
 }
-
