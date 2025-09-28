@@ -48,8 +48,6 @@ namespace BanhMyIT.Service
                 .FirstOrDefaultAsync(c => c.CategoryID == id);
             if (cat == null) return;
             
-            if (cat.Products != null && cat.Products.Count > 0)
-                return;
 
             _context.Categories.Remove(cat);
             await _context.SaveChangesAsync();

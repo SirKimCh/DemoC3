@@ -31,6 +31,7 @@ else
     </div>
 
     <form asp-action="Delete" method="post" class="d-flex gap-2">
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="CategoryID"/>
         <button type="submit" class="btn btn-danger">Confirm Delete</button>
         <a asp-action="Index" class="btn btn-secondary">Cancel</a>

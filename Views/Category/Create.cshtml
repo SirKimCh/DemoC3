@@ -5,6 +5,8 @@
 <h1 class="mb-3">Create Category</h1>
 
 <form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="mb-3">

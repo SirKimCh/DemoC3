@@ -1,0 +1,23 @@
+﻿@model BanhMyIT.Models.Bill
+@{
+    ViewData["Title"] = "Bill Details";
+}
+<h2>Bill Details</h2>
+<div>
+    <h4>Bill</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">BillID</dt>
+        <dd class = "col-sm-10">@Model.BillID</dd>
+        <dt class = "col-sm-2">User</dt>
+        <dd class = "col-sm-10">@Model.User?.FirstMidName @Model.User?.LastName</dd>
+        <dt class = "col-sm-2">Product</dt>
+        <dd class = "col-sm-10">@Model.Product?.Name</dd>
+        <dt class = "col-sm-2">PayMethod</dt>
+        <dd class = "col-sm-10">@Model.PayMethod</dd>
+        <dt class = "col-sm-2">SumPrice</dt>
+        <dd class = "col-sm-10">@Model.SumPrice</dd>
+    </dl>
+    <a asp-action="Edit" asp-route-id="@Model.BillID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

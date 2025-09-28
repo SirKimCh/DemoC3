@@ -5,7 +5,8 @@
 
 <h1 class="mb-3">Edit Product</h1>
 
-<form asp-action="Edit" method="post" class="needs-validation" novalidate>
+<form asp-action="Edit" asp-route-id="@Model.ProductID" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="ProductID"/>
 
     <div class="mb-3">

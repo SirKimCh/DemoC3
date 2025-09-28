@@ -1,0 +1,36 @@
+﻿@model IEnumerable<BanhMyIT.Models.Bill>
+@{
+    ViewData["Title"] = "Bills";
+}
+<h2>Bills</h2>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>BillID</th>
+            <th>User</th>
+            <th>Product</th>
+            <th>PayMethod</th>
+            <th>SumPrice</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.BillID</td>
+            <td>@item.User?.FirstMidName @item.User?.LastName</td>
+            <td>@item.Product?.Name</td>
+            <td>@item.PayMethod</td>
+            <td>@item.SumPrice</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.BillID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.BillID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.BillID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

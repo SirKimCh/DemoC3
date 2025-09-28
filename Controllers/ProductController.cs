@@ -2,6 +2,7 @@
 using BanhMyIT.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 
 namespace BanhMyIT.Controllers
 {
@@ -9,11 +10,13 @@ namespace BanhMyIT.Controllers
     {
         private readonly IProductService _productService;
         private readonly BanhMyITDbContext _context;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductService productService, BanhMyITDbContext context)
+        public ProductController(IProductService productService, BanhMyITDbContext context, ILogger<ProductController> logger)
         {
             _productService = productService;
             _context = context;
+            _logger = logger;
         }
 
         private void PopulateCategories(int? selectedId = null)
@@ -47,7 +50,18 @@ namespace BanhMyIT.Controllers
             if (ModelState.IsValid)
             {
                 await _productService.AddAsync(product);
+                TempData["Success"] = "Product created successfully";
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var err in kv.Value.Errors)
+                    {
+                        _logger.LogWarning("Create Product ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
+                    }
+                }
             }
             PopulateCategories(product.CategoryID);
             return View(product);
@@ -69,7 +83,18 @@ namespace BanhMyIT.Controllers
             if (ModelState.IsValid)
             {
                 await _productService.UpdateAsync(product);
+                TempData["Success"] = "Product updated successfully";
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var err in kv.Value.Errors)
+                    {
+                        _logger.LogWarning("Edit Product ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
+                    }
+                }
             }
             PopulateCategories(product.CategoryID);
             return View(product);
@@ -87,6 +112,7 @@ namespace BanhMyIT.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productService.DeleteAsync(id);
+            TempData["Success"] = "Product deleted successfully";
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 
 namespace BanhMyIT.Models
 {
@@ -13,12 +12,15 @@ namespace BanhMyIT.Models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BillID { get; set; }
+        [Required]
         public int ProductID { get; set; }
+        [Required]
         public int UserID { get; set; }
         public PayMethod? PayMethod { get; set; }
+        [Range(0,int.MaxValue, ErrorMessage = "SumPrice must be >= 0")] 
         public int SumPrice { get; set; }
 
-        public User User { get; set; }
-        public Product Product { get; set; }
+        public User User { get; set; } = null!; // EF populated
+        public Product Product { get; set; } = null!; // EF populated
     }
 }

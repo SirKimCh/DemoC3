@@ -6,6 +6,7 @@
 <h1 class="mb-3">Create Product</h1>
 
 <form asp-action="Create" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
