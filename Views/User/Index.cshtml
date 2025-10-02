@@ -16,9 +16,11 @@ else
         <thead class="table-light">
         <tr>
             <th>Name</th>
-            <th>Address</th>
-            <th>City</th>
-            <th style="width:180px;"></th>
+            <th>Street</th>
+            <th>District</th>
+            <th>Province</th>
+            <th>Full Address</th>
+            <th style="width:220px;"></th>
         </tr>
         </thead>
         <tbody>
@@ -26,8 +28,10 @@ else
         {
             <tr>
                 <td>@u.FirstMidName @u.LastName</td>
+                <td>@u.StreetAddress</td>
+                <td>@u.District?.Name</td>
+                <td>@u.Province?.Name</td>
                 <td>@u.Address</td>
-                <td>@u.City</td>
                 <td>
                     <div class="btn-group btn-group-sm" role="group">
                         <a asp-action="Details" asp-route-id="@u.UserID" class="btn btn-outline-secondary">Details</a>

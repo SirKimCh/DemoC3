@@ -4048,11 +4048,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT\\BanhMyIT.csproj",
+      "projectUniqueName": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT.csproj",
       "projectName": "BanhMyIT",
-      "projectPath": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT\\BanhMyIT.csproj",
+      "projectPath": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT.csproj",
       "packagesPath": "C:\\Users\\akira\\.nuget\\packages\\",
-      "outputPath": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT\\obj\\",
+      "outputPath": "F:\\Demo\\C\\BanhMyIT\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

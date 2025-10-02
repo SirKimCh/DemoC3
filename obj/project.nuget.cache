@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kcyW3Jxsu6A=",
+  "dgSpecHash": "NY7BSfSa0AQ=",
   "success": true,
-  "projectFilePath": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT\\BanhMyIT.csproj",
+  "projectFilePath": "F:\\Demo\\C\\BanhMyIT\\BanhMyIT.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\akira\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\akira\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

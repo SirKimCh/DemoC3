@@ -1,6 +1,8 @@
-﻿@model BanhMyIT.Models.User
+﻿@model BanhMyIT.ViewModels.UserAddressViewModel
 @{
     ViewData["Title"] = "Edit User";
+    var provinces = ViewBag.Provinces as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+    var districts = ViewBag.Districts as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
 }
 <h1 class="mb-3">Edit User</h1>
 <form asp-action="Edit" method="post" class="needs-validation" novalidate>
@@ -18,15 +20,51 @@
             <input asp-for="LastName" class="form-control" />
             <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
-        <div class="col-md-8">
-            <label asp-for="Address" class="form-label"></label>
-            <input asp-for="Address" class="form-control" />
-            <span asp-validation-for="Address" class="text-danger"></span>
+        <div class="col-md-6">
+            <label asp-for="ProvinceId" class="form-label"></label>
+            <select asp-for="ProvinceId" class="form-select" asp-items="provinces" id="provinceSelect">
+                <option value="">-- Chọn tỉnh / thành phố --</option>
+            </select>
+            <span asp-validation-for="ProvinceId" class="text-danger"></span>
         </div>
-        <div class="col-md-4">
-            <label asp-for="City" class="form-label"></label>
-            <input asp-for="City" class="form-control" />
-            <span asp-validation-for="City" class="text-danger"></span>
+        <div class="col-md-6">
+            <label asp-for="DistrictId" class="form-label"></label>
+            @if (Model.ProvinceId == 0)
+            {
+                <select asp-for="DistrictId" class="form-select" id="districtSelect" disabled>
+                    <option value="">-- Chọn quận / huyện --</option>
+                    @if (districts != null)
+                    {
+                        foreach (var d in districts)
+                        {
+                            <option value="@d.Value" selected="@(d.Selected ? "selected" : null)">@d.Text</option>
+                        }
+                    }
+                </select>
+            }
+            else
+            {
+                <select asp-for="DistrictId" class="form-select" id="districtSelect">
+                    <option value="">-- Chọn quận / huyện --</option>
+                    @if (districts != null)
+                    {
+                        foreach (var d in districts)
+                        {
+                            <option value="@d.Value" selected="@(d.Selected ? "selected" : null)">@d.Text</option>
+                        }
+                    }
+                </select>
+            }
+            <span asp-validation-for="DistrictId" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="StreetAddress" class="form-label"></label>
+            <input asp-for="StreetAddress" class="form-control" />
+            <span asp-validation-for="StreetAddress" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Địa chỉ đầy đủ</label>
+            <input class="form-control" value="@Model.FullAddress" disabled />
         </div>
     </div>
     <div class="d-flex gap-2 mt-4">
@@ -34,4 +72,38 @@
         <a asp-action="Index" class="btn btn-secondary">Back</a>
     </div>
 </form>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts { 
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function() {
+            const provinceSelect = document.getElementById('provinceSelect');
+            const districtSelect = document.getElementById('districtSelect');
+            const currentDistrict = '@(Model.DistrictId == 0 ? "" : Model.DistrictId.ToString())';
+            function loadDistricts(pid) {
+                districtSelect.innerHTML = '<option value="">-- Chọn quận / huyện --</option>';
+                districtSelect.disabled = true;
+                if (!pid) return;
+                fetch('@Url.Action("GetDistricts","User")?provinceId=' + encodeURIComponent(pid))
+                    .then(r => r.json())
+                    .then(list => {
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            const idVal = d.districtId || d.DistrictId;
+                            opt.value = idVal;
+                            opt.textContent = d.name || d.Name;
+                            if (currentDistrict && currentDistrict === idVal.toString()) opt.selected = true;
+                            districtSelect.appendChild(opt);
+                        });
+                        districtSelect.disabled = false;
+                    })
+                    .catch(err => console.error('Load districts error', err));
+            }
+            if (provinceSelect.value) {
+                loadDistricts(provinceSelect.value);
+            }
+            provinceSelect.addEventListener('change', function () {
+                loadDistricts(this.value);
+            });
+        })();
+    </script>
+}

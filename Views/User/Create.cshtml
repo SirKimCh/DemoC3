@@ -1,6 +1,7 @@
-﻿@model BanhMyIT.Models.User
+﻿@model BanhMyIT.ViewModels.UserAddressViewModel
 @{
     ViewData["Title"] = "Create User";
+    var provinces = ViewBag.Provinces as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
 }
 <h1 class="mb-3">Create User</h1>
 <form asp-action="Create" method="post" class="needs-validation" novalidate>
@@ -17,15 +18,24 @@
             <input asp-for="LastName" class="form-control" />
             <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
-        <div class="col-md-8">
-            <label asp-for="Address" class="form-label"></label>
-            <input asp-for="Address" class="form-control" />
-            <span asp-validation-for="Address" class="text-danger"></span>
+        <div class="col-md-6">
+            <label asp-for="ProvinceId" class="form-label"></label>
+            <select asp-for="ProvinceId" class="form-select" asp-items="provinces" id="provinceSelect">
+                <option value="">-- Chọn tỉnh / thành phố --</option>
+            </select>
+            <span asp-validation-for="ProvinceId" class="text-danger"></span>
         </div>
-        <div class="col-md-4">
-            <label asp-for="City" class="form-label"></label>
-            <input asp-for="City" class="form-control" />
-            <span asp-validation-for="City" class="text-danger"></span>
+        <div class="col-md-6">
+            <label asp-for="DistrictId" class="form-label"></label>
+            <select asp-for="DistrictId" class="form-select" id="districtSelect" disabled>
+                <option value="">-- Chọn quận / huyện --</option>
+            </select>
+            <span asp-validation-for="DistrictId" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="StreetAddress" class="form-label"></label>
+            <input asp-for="StreetAddress" class="form-control" placeholder="Số nhà, tên đường..." />
+            <span asp-validation-for="StreetAddress" class="text-danger"></span>
         </div>
     </div>
     <div class="d-flex gap-2 mt-4">
@@ -33,4 +43,30 @@
         <a asp-action="Index" class="btn btn-secondary">Back</a>
     </div>
 </form>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function() {
+            const provinceSelect = document.getElementById('provinceSelect');
+            const districtSelect = document.getElementById('districtSelect');
+            provinceSelect.addEventListener('change', function () {
+                const provinceId = this.value;
+                districtSelect.innerHTML = '<option value="">-- Chọn quận / huyện --</option>';
+                districtSelect.disabled = true;
+                if (!provinceId) return;
+                fetch('@Url.Action("GetDistricts","User")?provinceId=' + encodeURIComponent(provinceId))
+                    .then(r => r.json())
+                    .then(list => {
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.districtId || d.districtID || d.DistrictId || d.DistrictID || d.districtId; // robust
+                            opt.textContent = d.name || d.Name;
+                            districtSelect.appendChild(opt);
+                        });
+                        districtSelect.disabled = false;
+                    })
+                    .catch(err => console.error('Load districts error', err));
+            });
+        })();
+    </script>
+}

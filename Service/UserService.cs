@@ -15,11 +15,19 @@ namespace BanhMyIT.Service
         }
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await _context.Users.Include(u => u.Bills).ToListAsync();
+            return await _context.Users
+                .Include(u => u.Province)
+                .Include(u => u.District)
+                .Include(u => u.Bills)
+                .ToListAsync();
         }
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _context.Users.Include(u => u.Bills).FirstOrDefaultAsync(u => u.UserID == id);
+            return await _context.Users
+                .Include(u => u.Province)
+                .Include(u => u.District)
+                .Include(u => u.Bills)
+                .FirstOrDefaultAsync(u => u.UserID == id);
         }
         public async Task AddAsync(User user)
         {
@@ -40,4 +48,3 @@ namespace BanhMyIT.Service
         }
     }
 }
-
