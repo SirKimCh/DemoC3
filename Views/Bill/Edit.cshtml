@@ -13,11 +13,6 @@
             <select asp-for="UserID" class="form-select" asp-items="@(new SelectList(ViewBag.Users, "UserID", "FirstMidName"))"></select>
             <span asp-validation-for="UserID" class="text-danger"></span>
         </div>
-        <div class="col-md-6">
-            <label asp-for="ProductID" class="form-label"></label>
-            <select asp-for="ProductID" class="form-select" asp-items="@(new SelectList(ViewBag.Products, "ProductID", "Name"))"></select>
-            <span asp-validation-for="ProductID" class="text-danger"></span>
-        </div>
         <div class="col-md-4">
             <label asp-for="PayMethod" class="form-label"></label>
             <select asp-for="PayMethod" class="form-select">
@@ -29,10 +24,29 @@
             <span asp-validation-for="PayMethod" class="text-danger"></span>
         </div>
         <div class="col-md-4">
-            <label asp-for="SumPrice" class="form-label"></label>
-            <input asp-for="SumPrice" class="form-control" />
-            <span asp-validation-for="SumPrice" class="text-danger"></span>
+            <label class="form-label">Total Price</label>
+            <input class="form-control" value="@Model.TotalPrice" disabled />
         </div>
+    </div>
+    <div class="mt-4">
+        <h5>Items (read-only)</h5>
+        @if(Model.BillDetails==null || !Model.BillDetails.Any()){
+            <div class="alert alert-secondary">No items linked. Items are created via Cart checkout.</div>
+        } else {
+            <table class="table table-sm table-bordered">
+                <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Unit</th><th class="text-end">SubTotal</th></tr></thead>
+                <tbody>
+                @foreach(var d in Model.BillDetails){
+                    <tr>
+                        <td>@d.Product?.Name</td>
+                        <td class="text-end">@d.Quantity</td>
+                        <td class="text-end">@d.UnitPrice</td>
+                        <td class="text-end">@d.SubTotal</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
     </div>
     <div class="d-flex gap-2 mt-4">
         <button type="submit" class="btn btn-primary">Update</button>

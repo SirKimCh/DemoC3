@@ -26,5 +26,6 @@ namespace BanhMyIT.Models
         public int DistrictId { get; set; }
         public District? District { get; set; }
         public ICollection<Bill> Bills { get; set; } = new List<Bill>();
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
     }
 }

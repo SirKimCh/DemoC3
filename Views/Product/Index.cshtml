@@ -9,9 +9,14 @@
     <div>
         <a asp-action="Create" class="btn btn-primary">Create New</a>
     </div>
+    <div>
+        <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-success">
+            <i class="bi bi-cart"></i> View Cart
+        </a>
+    </div>
 </div>
 
-@if (Model == null || !Model.Any())
+@if (!Model.Any())
 {
     <div class="alert alert-info">No products found.</div>
 }
@@ -23,7 +28,7 @@ else
             <th>Name</th>
             <th>Category</th>
             <th class="text-end">Price</th>
-            <th style="width:180px;"></th>
+            <th style="width:240px;">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -34,10 +39,19 @@ else
                 <td>@p.Category?.Name</td>
                 <td class="text-end">@String.Format("{0:0.##}", p.Price)</td>
                 <td>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a asp-action="Details" asp-route-id="@p.ProductID" class="btn btn-outline-secondary">Details</a>
-                        <a asp-action="Edit" asp-route-id="@p.ProductID" class="btn btn-outline-primary">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@p.ProductID" class="btn btn-outline-danger">Delete</a>
+                    <div class="d-flex gap-1">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a asp-action="Details" asp-route-id="@p.ProductID" class="btn btn-outline-secondary">Details</a>
+                            <a asp-action="Edit" asp-route-id="@p.ProductID" class="btn btn-outline-primary">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@p.ProductID" class="btn btn-outline-danger">Delete</a>
+                        </div>
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="productId" value="@p.ProductID" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>

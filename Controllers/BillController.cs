@@ -9,13 +9,11 @@ namespace BanhMyIT.Controllers
     public class BillController : Controller
     {
         private readonly IBillService _billService;
-        private readonly IProductService _productService;
         private readonly IUserService _userService;
         private readonly ILogger<BillController> _logger;
-        public BillController(IBillService billService, IProductService productService, IUserService userService, ILogger<BillController> logger)
+        public BillController(IBillService billService, IUserService userService, ILogger<BillController> logger)
         {
             _billService = billService;
-            _productService = productService;
             _userService = userService;
             _logger = logger;
         }
@@ -32,9 +30,8 @@ namespace BanhMyIT.Controllers
         }
         public async Task<IActionResult> Create()
         {
-            ViewBag.Products = await _productService.GetAllAsync();
             ViewBag.Users = await _userService.GetAllAsync();
-            return View();
+            return View(new Bill());
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -42,17 +39,14 @@ namespace BanhMyIT.Controllers
         {
             if (ModelState.IsValid)
             {
+                bill.TotalPrice = 0; // no details yet
                 await _billService.AddAsync(bill);
                 TempData["Success"] = "Bill created successfully";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = bill.BillID });
             }
-            else
-            {
-                foreach (var kv in ModelState)
-                    foreach (var err in kv.Value.Errors)
-                        _logger.LogWarning("Create Bill ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
-            }
-            ViewBag.Products = await _productService.GetAllAsync();
+            foreach (var kv in ModelState)
+                foreach (var err in kv.Value.Errors)
+                    _logger.LogWarning("Create Bill ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
             ViewBag.Users = await _userService.GetAllAsync();
             return View(bill);
         }
@@ -60,7 +54,6 @@ namespace BanhMyIT.Controllers
         {
             var bill = await _billService.GetByIdAsync(id);
             if (bill == null) return NotFound();
-            ViewBag.Products = await _productService.GetAllAsync();
             ViewBag.Users = await _userService.GetAllAsync();
             return View(bill);
         }
@@ -74,13 +67,9 @@ namespace BanhMyIT.Controllers
                 TempData["Success"] = "Bill updated successfully";
                 return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                foreach (var kv in ModelState)
-                    foreach (var err in kv.Value.Errors)
-                        _logger.LogWarning("Edit Bill ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
-            }
-            ViewBag.Products = await _productService.GetAllAsync();
+            foreach (var kv in ModelState)
+                foreach (var err in kv.Value.Errors)
+                    _logger.LogWarning("Edit Bill ModelState error for {Field}: {Error}", kv.Key, err.ErrorMessage);
             ViewBag.Users = await _userService.GetAllAsync();
             return View(bill);
         }
@@ -97,6 +86,12 @@ namespace BanhMyIT.Controllers
             await _billService.DeleteAsync(id);
             TempData["Success"] = "Bill deleted successfully";
             return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<IActionResult> Recalculate(int id)
+        {
+            await _billService.RecalculateTotalAsync(id);
+            return RedirectToAction(nameof(Details), new { id });
         }
     }
 }

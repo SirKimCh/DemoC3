@@ -7,10 +7,11 @@ namespace BanhMyIT.Interface
     public interface IBillService
     {
         Task<IEnumerable<Bill>> GetAllAsync();
-        Task<Bill> GetByIdAsync(int id);
+        Task<Bill?> GetByIdAsync(int id);
         Task AddAsync(Bill bill);
         Task UpdateAsync(Bill bill);
         Task DeleteAsync(int id);
+        Task<Bill> CreateFromCartAsync(int cartId, PayMethod? payMethod);
+        Task RecalculateTotalAsync(int billId);
     }
 }
-

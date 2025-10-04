@@ -16,10 +16,11 @@ else
         <thead class="table-light">
         <tr>
             <th>User</th>
-            <th>Product</th>
+            <th class="text-end">Items</th>
+            <th class="text-end">Total Price</th>
             <th>Pay Method</th>
-            <th class="text-end">Sum Price</th>
-            <th style="width:180px;"></th>
+            <th>Created</th>
+            <th style="width:210px;"></th>
         </tr>
         </thead>
         <tbody>
@@ -27,13 +28,18 @@ else
         {
             <tr>
                 <td>@b.User?.FirstMidName @b.User?.LastName</td>
-                <td>@b.Product?.Name</td>
+                <td class="text-end">@b.BillDetails?.Count()</td>
+                <td class="text-end">@b.TotalPrice</td>
                 <td>@b.PayMethod</td>
-                <td class="text-end">@b.SumPrice</td>
+                <td>@b.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                 <td>
                     <div class="btn-group btn-group-sm" role="group">
                         <a asp-action="Details" asp-route-id="@b.BillID" class="btn btn-outline-secondary">Details</a>
                         <a asp-action="Edit" asp-route-id="@b.BillID" class="btn btn-outline-primary">Edit</a>
+                        <form asp-action="Recalculate" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@b.BillID" />
+                            <button type="submit" class="btn btn-outline-warning">Recalc</button>
+                        </form>
                         <a asp-action="Delete" asp-route-id="@b.BillID" class="btn btn-outline-danger">Delete</a>
                     </div>
                 </td>

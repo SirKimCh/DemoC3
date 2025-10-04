@@ -14,13 +14,6 @@
             </select>
             <span asp-validation-for="UserID" class="text-danger"></span>
         </div>
-        <div class="col-md-6">
-            <label asp-for="ProductID" class="form-label"></label>
-            <select asp-for="ProductID" class="form-select" asp-items="@(new SelectList(ViewBag.Products, "ProductID", "Name"))">
-                <option value="">-- Select Product --</option>
-            </select>
-            <span asp-validation-for="ProductID" class="text-danger"></span>
-        </div>
         <div class="col-md-4">
             <label asp-for="PayMethod" class="form-label"></label>
             <select asp-for="PayMethod" class="form-select">
@@ -31,12 +24,8 @@
             </select>
             <span asp-validation-for="PayMethod" class="text-danger"></span>
         </div>
-        <div class="col-md-4">
-            <label asp-for="SumPrice" class="form-label"></label>
-            <input asp-for="SumPrice" class="form-control" />
-            <span asp-validation-for="SumPrice" class="text-danger"></span>
-        </div>
     </div>
+    <div class="alert alert-info mt-3">Bill will have Total Price = 0 until items are added via cart checkout.</div>
     <div class="d-flex gap-2 mt-4">
         <button type="submit" class="btn btn-primary">Save</button>
         <a asp-action="Index" class="btn btn-secondary">Back</a>

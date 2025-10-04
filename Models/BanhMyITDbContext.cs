@@ -13,6 +13,9 @@ namespace BanhMyIT.Models
         public DbSet<Bill> Bills { get; set; }
         public DbSet<Province> Provinces { get; set; }
         public DbSet<District> Districts { get; set; }
+        public DbSet<BillDetail> BillDetails { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartDetail> CartDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -63,6 +66,35 @@ namespace BanhMyIT.Models
                 .HasOne(u => u.District)
                 .WithMany()
                 .HasForeignKey(u => u.DistrictId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Bill & BillDetail
+            modelBuilder.Entity<BillDetail>()
+                .HasOne(d => d.Bill)
+                .WithMany(b => b.BillDetails)
+                .HasForeignKey(d => d.BillID)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<BillDetail>()
+                .HasOne(d => d.Product)
+                .WithMany(p => p.BillDetails)
+                .HasForeignKey(d => d.ProductID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Cart & CartDetail
+            modelBuilder.Entity<Cart>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Carts)
+                .HasForeignKey(c => c.UserID)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CartDetail>()
+                .HasOne(cd => cd.Cart)
+                .WithMany(c => c.CartDetails)
+                .HasForeignKey(cd => cd.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CartDetail>()
+                .HasOne(cd => cd.Product)
+                .WithMany(p => p.CartDetails)
+                .HasForeignKey(cd => cd.ProductID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

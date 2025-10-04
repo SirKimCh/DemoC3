@@ -16,10 +16,8 @@ namespace BanhMyIT.Models
         public int Price { get; set; }
         [Required, StringLength(500)]
         public string Description { get; set; } = string.Empty;
-
-        [ValidateNever] 
-        public ICollection<Bill> Bills { get; set; } = new List<Bill>();
-        [ValidateNever] 
-        public Category Category { get; set; } = null!; 
+        [ValidateNever] public Category Category { get; set; } = null!; 
+        [ValidateNever] public ICollection<BillDetail> BillDetails { get; set; } = new List<BillDetail>();
+        [ValidateNever] public ICollection<CartDetail> CartDetails { get; set; } = new List<CartDetail>();
     }
 }

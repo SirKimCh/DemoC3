@@ -27,6 +27,7 @@ namespace BanhMyIT.Controllers
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetAllAsync();
+            ViewBag.Users = _context.Users.Select(u => new { u.UserID, FullName = u.FirstMidName + " " + u.LastName }).ToList();
             return View(products);
         }
 
