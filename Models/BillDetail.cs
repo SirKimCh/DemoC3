@@ -1,2 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;using System.ComponentModel.DataAnnotations.Schema;using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;namespace BanhMyIT.Models{ public class BillDetail { [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)] public int BillDetailId { get; set; } [Required] public int BillID { get; set; } [Required] public int ProductID { get; set; } [Range(1,int.MaxValue)] public int Quantity { get; set; } = 1; [Range(0,int.MaxValue)] public int UnitPrice { get; set; } [Range(0,int.MaxValue)] public int SubTotal { get; set; } [ValidateNever] public Bill Bill { get; set; } = null!; [ValidateNever] public Product Product { get; set; } = null!; }}
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
+namespace BanhMyIT.Models
+{
+    public class BillDetail
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int BillDetailId { get; set; }
+
+        [Required] public int BillID { get; set; }
+        [Required] public int ProductID { get; set; }
+        [Range(1, int.MaxValue)] public int Quantity { get; set; } = 1;
+        [Range(0, int.MaxValue)] public int UnitPrice { get; set; }
+        [Range(0, int.MaxValue)] public int SubTotal { get; set; }
+        [ValidateNever] public Bill Bill { get; set; } = null!;
+        [ValidateNever] public Product Product { get; set; } = null!;
+    }
+}

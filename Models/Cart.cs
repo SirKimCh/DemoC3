@@ -1,2 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;using System.ComponentModel.DataAnnotations.Schema;using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;namespace BanhMyIT.Models{ public class Cart { [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)] public int CartId { get; set; } [Required] public int UserID { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; [ValidateNever] public User User { get; set; } = null!; [ValidateNever] public ICollection<CartDetail> CartDetails { get; set; } = new List<CartDetail>(); }}
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
+namespace BanhMyIT.Models
+{
+    public class Cart
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int CartId { get; set; }
+
+        [Required] public int UserID { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [ValidateNever] public User User { get; set; } = null!;
+        [ValidateNever] public ICollection<CartDetail> CartDetails { get; set; } = new List<CartDetail>();
+    }
+}
