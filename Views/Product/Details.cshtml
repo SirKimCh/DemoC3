@@ -33,6 +33,7 @@
 </div>
 
 <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mb-3">
+    @Html.AntiForgeryToken()
     <input type="hidden" name="productId" value="@Model.ProductID" />
     <div class="row g-2 align-items-center">
         <div class="col-auto">

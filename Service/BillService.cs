@@ -21,6 +21,14 @@ namespace BanhMyIT.Service
                 .Include(b => b.BillDetails).ThenInclude(d => d.Product)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Bill>> GetByUserAsync(int userId)
+        {
+            return await _context.Bills
+                .Where(b => b.UserID == userId)
+                .Include(b => b.User)
+                .Include(b => b.BillDetails).ThenInclude(d => d.Product)
+                .ToListAsync();
+        }
         public async Task<Bill?> GetByIdAsync(int id)
         {
             return await _context.Bills

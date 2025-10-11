@@ -45,6 +45,7 @@ else
                         <td>@item.SubTotal</td>
                         <td>
                             <form asp-action="RemoveFromCart" method="post" style="display: inline;">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="cartDetailId" value="@item.CartDetailId" />
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     Remove
@@ -71,6 +72,7 @@ else
         
         <div>
             <form asp-action="ClearCart" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-warning">Clear Cart</button>
             </form>
             
@@ -85,6 +87,7 @@ else
         <div class="modal-dialog">
             <div class="modal-content">
                 <form asp-action="Checkout" method="post">
+                    @Html.AntiForgeryToken()
                     <div class="modal-header">
                         <h5 class="modal-title" id="checkoutModalLabel">Complete Your Order</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

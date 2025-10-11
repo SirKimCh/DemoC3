@@ -3,6 +3,7 @@ using BanhMyIT.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BanhMyIT.Controllers
 {
@@ -27,7 +28,7 @@ namespace BanhMyIT.Controllers
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetAllAsync();
-            ViewBag.Users = _context.Users.Select(u => new { u.UserID, FullName = u.FirstMidName + " " + u.LastName }).ToList();
+            ViewBag.Users = _context.AppUsers.Select(u => new { u.UserID, FullName = u.FirstMidName + " " + u.LastName }).ToList();
             return View(products);
         }
 
@@ -38,6 +39,7 @@ namespace BanhMyIT.Controllers
             return View(product);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             PopulateCategories();
@@ -46,6 +48,7 @@ namespace BanhMyIT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(Product product)
         {
             if (ModelState.IsValid)
@@ -68,6 +71,7 @@ namespace BanhMyIT.Controllers
             return View(product);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _productService.GetByIdAsync(id);
@@ -78,6 +82,7 @@ namespace BanhMyIT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, Product product)
         {
             if (id != product.ProductID) return BadRequest();
@@ -101,6 +106,7 @@ namespace BanhMyIT.Controllers
             return View(product);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var product = await _productService.GetByIdAsync(id);
@@ -110,6 +116,7 @@ namespace BanhMyIT.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productService.DeleteAsync(id);

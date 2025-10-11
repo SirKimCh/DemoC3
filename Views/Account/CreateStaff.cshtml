@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Create Staff";
+}
+<h2>Create Staff</h2>
+<form asp-action="CreateStaff" method="post">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label class="form-label" for="username">Username</label>
+        <input class="form-control" id="username" name="username" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="password">Password (min 6)</label>
+        <input class="form-control" id="password" name="password" type="password" minlength="6" required />
+    </div>
+    <div class="text-danger">@Html.ValidationSummary()</div>
+    <button class="btn btn-primary" type="submit">Create</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+

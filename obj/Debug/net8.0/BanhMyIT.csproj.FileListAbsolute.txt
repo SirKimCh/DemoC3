@@ -294,3 +294,11 @@ F:\Demo\C\BanhMyIT\obj\Debug\net8.0\refint\BanhMyIT.dll
 F:\Demo\C\BanhMyIT\obj\Debug\net8.0\BanhMyIT.pdb
 F:\Demo\C\BanhMyIT\obj\Debug\net8.0\BanhMyIT.genruntimeconfig.cache
 F:\Demo\C\BanhMyIT\obj\Debug\net8.0\ref\BanhMyIT.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.UI.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Embedded.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
+F:\Demo\C\BanhMyIT\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
+F:\Demo\C\BanhMyIT\obj\Debug\net8.0\BanhMyIT.MvcApplicationPartsAssemblyInfo.cs

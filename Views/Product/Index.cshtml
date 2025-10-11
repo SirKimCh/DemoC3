@@ -46,6 +46,7 @@ else
                             <a asp-action="Delete" asp-route-id="@p.ProductID" class="btn btn-outline-danger">Delete</a>
                         </div>
                         <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="productId" value="@p.ProductID" />
                             <input type="hidden" name="quantity" value="1" />
                             <button type="submit" class="btn btn-sm btn-success">

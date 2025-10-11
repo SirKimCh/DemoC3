@@ -3,6 +3,7 @@ using BanhMyIT.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BanhMyIT.Controllers
 {
@@ -30,6 +31,7 @@ namespace BanhMyIT.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             return View();
@@ -37,6 +39,7 @@ namespace BanhMyIT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(Category category)
         {
             if (ModelState.IsValid)
@@ -58,6 +61,7 @@ namespace BanhMyIT.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
         {
             var category = await _categoryService.GetByIdAsync(id);
@@ -67,6 +71,7 @@ namespace BanhMyIT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, Category category)
         {
             if (id != category.CategoryID) return BadRequest();
@@ -89,6 +94,7 @@ namespace BanhMyIT.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _categoryService.GetByIdAsync(id);
@@ -98,6 +104,7 @@ namespace BanhMyIT.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _categoryService.DeleteAsync(id);

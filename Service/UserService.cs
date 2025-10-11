@@ -15,15 +15,15 @@ namespace BanhMyIT.Service
         }
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await _context.Users
+            return await _context.AppUsers
                 .Include(u => u.Province)
                 .Include(u => u.District)
                 .Include(u => u.Bills)
                 .ToListAsync();
         }
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users
+            return await _context.AppUsers
                 .Include(u => u.Province)
                 .Include(u => u.District)
                 .Include(u => u.Bills)
@@ -31,19 +31,19 @@ namespace BanhMyIT.Service
         }
         public async Task AddAsync(User user)
         {
-            _context.Users.Add(user);
+            _context.AppUsers.Add(user);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateAsync(User user)
         {
-            _context.Users.Update(user);
+            _context.AppUsers.Update(user);
             await _context.SaveChangesAsync();
         }
         public async Task DeleteAsync(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.AppUsers.FindAsync(id);
             if (user == null) return;
-            _context.Users.Remove(user);
+            _context.AppUsers.Remove(user);
             await _context.SaveChangesAsync();
         }
     }

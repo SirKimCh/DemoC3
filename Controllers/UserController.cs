@@ -8,9 +8,11 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BanhMyIT.Controllers
 {
+    [Authorize(Roles = "Admin,Staff")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -24,12 +26,12 @@ namespace BanhMyIT.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var users = await _db.Users.Include(u => u.Province).Include(u => u.District).ToListAsync();
+            var users = await _db.AppUsers.Include(u => u.Province).Include(u => u.District).ToListAsync();
             return View(users);
         }
         public async Task<IActionResult> Details(int id)
         {
-            var user = await _db.Users.Include(u => u.Province).Include(u => u.District).FirstOrDefaultAsync(u => u.UserID == id);
+            var user = await _db.AppUsers.Include(u => u.Province).Include(u => u.District).FirstOrDefaultAsync(u => u.UserID == id);
             if (user == null) return NotFound();
             return View(user);
         }
@@ -95,7 +97,7 @@ namespace BanhMyIT.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            var user = await _db.Users.Include(u => u.Province).Include(u => u.District).FirstOrDefaultAsync(u => u.UserID == id);
+            var user = await _db.AppUsers.Include(u => u.Province).Include(u => u.District).FirstOrDefaultAsync(u => u.UserID == id);
             if (user == null) return NotFound();
             var vm = new UserAddressViewModel
             {
@@ -119,7 +121,7 @@ namespace BanhMyIT.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _db.Users.FindAsync(model.UserID);
+                var user = await _db.AppUsers.FindAsync(model.UserID);
                 if (user == null) return NotFound();
                 var province = await _db.Provinces.FindAsync(model.ProvinceId);
                 if (province == null)
@@ -154,7 +156,7 @@ namespace BanhMyIT.Controllers
         }
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _db.Users.Include(u => u.Province).Include(u => u.District).FirstOrDefaultAsync(u => u.UserID == id);
+            var user = await _db.AppUsers.Include(u => u.Province).Include(u => u.District).FirstOrDefaultAsync(u => u.UserID == id);
             if (user == null) return NotFound();
             return View(user);
         }
@@ -169,7 +171,7 @@ namespace BanhMyIT.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDistricts(int provinceId)
         {
-            if (provinceId <= 0) return Json(Array.Empty<object>());
+            if (provinceId <= 0) return Json(System.Array.Empty<object>());
             var districts = await _db.Districts.Where(d => d.ProvinceId == provinceId).OrderBy(d => d.Name).Select(d => new { d.DistrictId, d.Name }).ToListAsync();
             return Json(districts);
         }

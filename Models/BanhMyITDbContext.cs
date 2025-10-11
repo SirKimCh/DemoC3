@@ -1,15 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using BanhMyIT.Data;
 
 namespace BanhMyIT.Models
 {
-    public class BanhMyITDbContext : DbContext
+    public class BanhMyITDbContext : IdentityDbContext<ApplicationUser>
     {
         public BanhMyITDbContext(DbContextOptions<BanhMyITDbContext> options) 
             : base(options) { }
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> AppUsers { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<Province> Provinces { get; set; }
         public DbSet<District> Districts { get; set; }
@@ -20,7 +22,7 @@ namespace BanhMyIT.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // Seed provinces & districts (removed placeholder Unknown province to satisfy identity key requirements)
+            modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Province>().HasData(
                 new Province { ProvinceId = 1, Name = "Hà Nội" },
                 new Province { ProvinceId = 2, Name = "TP Hồ Chí Minh" },
