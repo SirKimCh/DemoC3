@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using BanhMyIT.Data;
+using BanhMyIT.ViewModels;
 
 namespace BanhMyIT.Controllers
 {
@@ -24,10 +25,22 @@ namespace BanhMyIT.Controllers
             _userManager = userManager;
         }
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search, OrderStatus? status, string? sortBy = "created", bool desc = false, int page = 1, int pageSize = 10)
         {
-            var bills = await _billService.GetAllAsync();
-            return View(bills);
+            var (items, total) = await _billService.QueryAsync(search, status, sortBy, desc, page, pageSize);
+            var vm = new BillListViewModel
+            {
+                Items = items,
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize,
+                Search = search,
+                Status = status,
+                SortBy = sortBy,
+                Desc = desc
+            };
+            ViewData.Model = vm;
+            return View();
         }
 
         private async Task<int?> GetDomainUserIdOrRedirectAsync()
@@ -129,8 +142,91 @@ namespace BanhMyIT.Controllers
         {
             var userId = await GetDomainUserIdOrRedirectAsync();
             if (!userId.HasValue) return RedirectToAction("Profile", "Account");
-            var mine = await _billService.GetByUserAsync(userId.Value);
-            return View("Index", mine);
+            var list = (await _billService.GetByUserAsync(userId.Value)).ToList();
+            var vm = new BillListViewModel
+            {
+                Items = list,
+                TotalCount = list.Count,
+                Page = 1,
+                PageSize = list.Count == 0 ? 10 : list.Count,
+                IsMyList = true
+            };
+            ViewData.Model = vm;
+            return View("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            var ok = await _billService.ConfirmAsync(id);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Đã xác thực đơn hàng." : "Không thể xác thực đơn hàng.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> Ship(int id)
+        {
+            var ok = await _billService.MarkShippedAsync(id);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Đã chuyển trạng thái Shipped." : "Không thể chuyển trạng thái Shipped.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> AdminCancel(int id, string? reason)
+        {
+            var ok = await _billService.AdminCancelAsync(id, reason);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Đã hủy đơn hàng." : "Không thể hủy đơn hàng.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveCancel(int id, string? reason)
+        {
+            var ok = await _billService.ApproveCancelAsync(id, reason);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Đã chấp nhận hủy đơn." : "Không thể chấp nhận hủy.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RejectCancel(int id)
+        {
+            var ok = await _billService.RejectCancelAsync(id);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Đã từ chối yêu cầu hủy." : "Không thể từ chối yêu cầu hủy.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Complete(int id)
+        {
+            var userId = await GetDomainUserIdOrRedirectAsync();
+            if (!userId.HasValue) return RedirectToAction("Profile", "Account");
+            var ok = await _billService.MarkCompletedByUserAsync(id, userId.Value);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Cảm ơn bạn! Đơn hàng đã hoàn thành." : "Không thể xác nhận đã nhận hàng.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> RequestCancel(int id, string? reason)
+        {
+            var userId = await GetDomainUserIdOrRedirectAsync();
+            if (!userId.HasValue) return RedirectToAction("Profile", "Account");
+            var ok = await _billService.RequestCancelAsync(id, userId.Value, reason);
+            TempData[ok ? "Success" : "ErrorMessage"] = ok ? "Đã gửi yêu cầu hủy. Vui lòng chờ duyệt." : "Không thể gửi yêu cầu hủy.";
+            return RedirectToAction(nameof(Details), new { id });
         }
     }
 }

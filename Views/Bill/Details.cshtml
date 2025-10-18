@@ -1,6 +1,7 @@
 ﻿@model BanhMyIT.Models.Bill
 @{
     ViewData["Title"] = "Bill Details";
+    bool isAdmin = User.IsInRole("Admin") || User.IsInRole("Staff");
 }
 <h2>Bill Details</h2>
 <div>
@@ -11,11 +12,73 @@
         <dd class="col-sm-10">@Model.User?.FirstMidName @Model.User?.LastName</dd>
         <dt class="col-sm-2">Pay Method</dt>
         <dd class="col-sm-10">@Model.PayMethod</dd>
+        <dt class="col-sm-2">Status</dt>
+        <dd class="col-sm-10"><span class="badge bg-secondary">@Model.Status</span></dd>
         <dt class="col-sm-2">Created</dt>
         <dd class="col-sm-10">@Model.CreatedAt.ToLocalTime()</dd>
+        @if (Model.ConfirmedAt.HasValue){<dt class="col-sm-2">Confirmed</dt><dd class="col-sm-10">@Model.ConfirmedAt.Value.ToLocalTime()</dd>}
+        @if (Model.ShippedAt.HasValue){<dt class="col-sm-2">Shipped</dt><dd class="col-sm-10">@Model.ShippedAt.Value.ToLocalTime()</dd>}
+        @if (Model.CompletedAt.HasValue){<dt class="col-sm-2">Completed</dt><dd class="col-sm-10">@Model.CompletedAt.Value.ToLocalTime()</dd>}
+        @if (Model.CancelledAt.HasValue){<dt class="col-sm-2">Cancelled</dt><dd class="col-sm-10">@Model.CancelledAt.Value.ToLocalTime()</dd>}
+        @if (!string.IsNullOrEmpty(Model.CancelReason)) {<dt class="col-sm-2">Reason</dt><dd class="col-sm-10">@Model.CancelReason</dd>}
         <dt class="col-sm-2">Total Price</dt>
         <dd class="col-sm-10">@Model.TotalPrice</dd>
     </dl>
+
+    <div class="mb-3">
+        @if (isAdmin)
+        {
+            if (Model.Status == BanhMyIT.Models.OrderStatus.Pending)
+            {
+                <form asp-action="Confirm" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <button class="btn btn-primary btn-sm">Xác thực</button>
+                </form>
+                <form asp-action="AdminCancel" method="post" class="d-inline ms-1">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <input type="hidden" name="reason" value="Admin hủy" />
+                    <button class="btn btn-danger btn-sm">Hủy</button>
+                </form>
+            }
+            else if (Model.Status == BanhMyIT.Models.OrderStatus.Confirmed)
+            {
+                <form asp-action="Ship" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <button class="btn btn-success btn-sm">Đã ship</button>
+                </form>
+            }
+            else if (Model.Status == BanhMyIT.Models.OrderStatus.CancelRequested)
+            {
+                <form asp-action="ApproveCancel" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <button class="btn btn-danger btn-sm">Duyệt hủy</button>
+                </form>
+                <form asp-action="RejectCancel" method="post" class="d-inline ms-1">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <button class="btn btn-warning btn-sm">Từ chối</button>
+                </form>
+            }
+        }
+        else
+        {
+            if (Model.Status == BanhMyIT.Models.OrderStatus.Shipped)
+            {
+                <form asp-action="Complete" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <button class="btn btn-success btn-sm">Tôi đã nhận hàng</button>
+                </form>
+            }
+            if (Model.Status == BanhMyIT.Models.OrderStatus.Pending || Model.Status == BanhMyIT.Models.OrderStatus.Confirmed)
+            {
+                <form asp-action="RequestCancel" method="post" class="d-inline ms-1">
+                    <input type="hidden" name="id" value="@Model.BillID" />
+                    <input type="text" name="reason" class="form-control d-inline-block" style="width:220px" placeholder="Lý do hủy (tuỳ chọn)" />
+                    <button class="btn btn-outline-danger btn-sm ms-1">Yêu c��u hủy</button>
+                </form>
+            }
+        }
+    </div>
+
     <h5 class="mt-4">Items</h5>
     @if (Model.BillDetails == null || !Model.BillDetails.Any())
     {
@@ -37,10 +100,13 @@
             </tbody>
         </table>
     }
-    <form asp-action="Recalculate" method="post" class="mb-3">
-        <input type="hidden" name="id" value="@Model.BillID" />
-        <button class="btn btn-outline-warning btn-sm">Recalculate</button>
-    </form>
+    @if (isAdmin)
+    {
+        <form asp-action="Recalculate" method="post" class="mb-3">
+            <input type="hidden" name="id" value="@Model.BillID" />
+            <button class="btn btn-outline-warning btn-sm">Recalculate</button>
+        </form>
+    }
     <a asp-action="Edit" asp-route-id="@Model.BillID">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

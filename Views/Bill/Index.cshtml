@@ -1,50 +1,137 @@
-﻿@model IEnumerable<BanhMyIT.Models.Bill>
-@{ 
-    ViewData["Title"] = "Bills"; 
+﻿@model BanhMyIT.ViewModels.BillListViewModel
+@{
+    ViewData["Title"] = Model.IsMyList ? "Đơn hàng của tôi" : "Quản lý đơn hàng";
+    bool isAdmin = User.IsInRole("Admin") || User.IsInRole("Staff");
 }
-<h1 class="mb-3">Bills</h1>
-<div class="d-flex justify-content-between mb-3">
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-</div>
-@if (Model == null || !Model.Any())
+<h1 class="mb-3">@ViewData["Title"]</h1>
+@if (isAdmin && !Model.IsMyList)
 {
-    <div class="alert alert-info">No bills found.</div>
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-auto">
+            <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Tìm mã, tên khách..." />
+        </div>
+        <div class="col-auto">
+            <select name="status" class="form-select">
+                <option value="">Tất cả trạng thái</option>
+                @foreach (var s in Enum.GetValues(typeof(BanhMyIT.Models.OrderStatus)).Cast<BanhMyIT.Models.OrderStatus>())
+                {
+                    <option value="@s" selected="@(Model.Status == s)">@s</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <select name="sortBy" class="form-select">
+                <option value="created" selected="@(Model.SortBy=="created")">Ngày tạo</option>
+                <option value="total" selected="@(Model.SortBy=="total")">Tổng tiền</option>
+                <option value="status" selected="@(Model.SortBy=="status")">Trạng thái</option>
+            </select>
+        </div>
+        <div class="col-auto form-check align-self-center">
+            <input class="form-check-input" type="checkbox" name="desc" value="true" @(Model.Desc?"checked":"") id="descChk" />
+            <label class="form-check-label" for="descChk">Giảm dần</label>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary">Lọc</button>
+        </div>
+        <div class="col-auto ms-auto">
+            <a asp-action="Create" class="btn btn-success">Tạo mới</a>
+        </div>
+    </form>
+}
+
+@if (Model.Items == null || !Model.Items.Any())
+{
+    <div class="alert alert-info">Không có đơn hàng.</div>
 }
 else
 {
     <table class="table table-striped table-bordered align-middle">
         <thead class="table-light">
         <tr>
-            <th>User</th>
-            <th class="text-end">Items</th>
-            <th class="text-end">Total Price</th>
-            <th>Pay Method</th>
-            <th>Created</th>
-            <th style="width:210px;"></th>
+            <th>Mã</th>
+            <th>Khách hàng</th>
+            <th class="text-end">Sản phẩm</th>
+            <th class="text-end">Tổng</th>
+            <th>Thanh toán</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th style="width:370px;"></th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var b in Model)
+        @foreach (var b in Model.Items)
         {
             <tr>
+                <td>#@b.BillID</td>
                 <td>@b.User?.FirstMidName @b.User?.LastName</td>
                 <td class="text-end">@b.BillDetails?.Count()</td>
                 <td class="text-end">@b.TotalPrice</td>
                 <td>@b.PayMethod</td>
+                <td>
+                    <span class="badge bg-secondary">@b.Status</span>
+                </td>
                 <td>@b.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                 <td>
                     <div class="btn-group btn-group-sm" role="group">
-                        <a asp-action="Details" asp-route-id="@b.BillID" class="btn btn-outline-secondary">Details</a>
-                        <a asp-action="Edit" asp-route-id="@b.BillID" class="btn btn-outline-primary">Edit</a>
-                        <form asp-action="Recalculate" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="@b.BillID" />
-                            <button type="submit" class="btn btn-outline-warning">Recalc</button>
-                        </form>
-                        <a asp-action="Delete" asp-route-id="@b.BillID" class="btn btn-outline-danger">Delete</a>
+                        <a asp-action="Details" asp-route-id="@b.BillID" class="btn btn-outline-secondary">Chi tiết</a>
+                        @if (isAdmin && !Model.IsMyList)
+                        {
+                            if (b.Status == BanhMyIT.Models.OrderStatus.Pending)
+                            {
+                                <form asp-action="Confirm" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@b.BillID" />
+                                    <button type="submit" class="btn btn-outline-primary">Xác thực</button>
+                                </form>
+                                <form asp-action="AdminCancel" method="post" class="d-inline ms-1">
+                                    <input type="hidden" name="id" value="@b.BillID" />
+                                    <input type="hidden" name="reason" value="Admin hủy" />
+                                    <button type="submit" class="btn btn-outline-danger">Hủy</button>
+                                </form>
+                            }
+                            else if (b.Status == BanhMyIT.Models.OrderStatus.Confirmed)
+                            {
+                                <form asp-action="Ship" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@b.BillID" />
+                                    <button type="submit" class="btn btn-outline-success">Đã ship</button>
+                                </form>
+                            }
+                            else if (b.Status == BanhMyIT.Models.OrderStatus.CancelRequested)
+                            {
+                                <form asp-action="ApproveCancel" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@b.BillID" />
+                                    <button type="submit" class="btn btn-outline-danger">Duyệt hủy</button>
+                                </form>
+                                <form asp-action="RejectCancel" method="post" class="d-inline ms-1">
+                                    <input type="hidden" name="id" value="@b.BillID" />
+                                    <button type="submit" class="btn btn-outline-warning">Từ chối</button>
+                                </form>
+                            }
+                        }
                     </div>
                 </td>
             </tr>
         }
         </tbody>
     </table>
+
+    @if (!Model.IsMyList)
+    {
+        <nav aria-label="paging">
+            <ul class="pagination">
+                @{ var prev = Model.Page - 1; var next = Model.Page + 1; }
+                <li class="page-item @(Model.Page<=1?"disabled":null)">
+                    <a class="page-link" asp-action="Index" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-sortBy="@Model.SortBy" asp-route-desc="@Model.Desc" asp-route-page="@prev" asp-route-pageSize="@Model.PageSize">«</a>
+                </li>
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i==Model.Page?"active":null)">
+                        <a class="page-link" asp-action="Index" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-sortBy="@Model.SortBy" asp-route-desc="@Model.Desc" asp-route-page="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.Page>=Model.TotalPages?"disabled":null)">
+                    <a class="page-link" asp-action="Index" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-sortBy="@Model.SortBy" asp-route-desc="@Model.Desc" asp-route-page="@next" asp-route-pageSize="@Model.PageSize">»</a>
+                </li>
+            </ul>
+        </nav>
+    }
 }
